@@ -185,7 +185,7 @@ def main():
                 elif player.hand.value > dealer.hand.value:
                     win(winner=player, loser=dealer)
                 elif dealer.hand.value > player.hand.value:
-                    win(dealer)
+                    win(winner=dealer, loser=player)
                 else:
                     push()
                 break
