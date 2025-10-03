@@ -110,8 +110,8 @@ def win(winner, loser):
         print("Dealer wins!")
         loser.chips.lose_bet()
 
-def bust(user):
-    if isinstance(user, Player):
+def bust(winner, loser):
+    if isinstance(loser, Player):
         print("Player busts!")
         user.chips.lose_bet()
     else:
