@@ -116,7 +116,7 @@ def bust(winner, loser):
         loser.chips.lose_bet()
     else:
         print("Dealer busts!")
-        user.chips.win_bet()
+        winner.chips.win_bet()
 
 def push():
     print("Dealer and Player tie! It's a push. ")
