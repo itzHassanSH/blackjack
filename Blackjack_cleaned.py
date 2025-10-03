@@ -181,7 +181,7 @@ def main():
                     dealer.hand.hit(card_deck)
                     show_all(player, dealer)
                 if dealer.hand.value > 21:
-                    bust(dealer)
+                    bust(winner=player, loser=dealer)
                 elif player.hand.value > dealer.hand.value:
                     win(player)
                 elif dealer.hand.value > player.hand.value:
