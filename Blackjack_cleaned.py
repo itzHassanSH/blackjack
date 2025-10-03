@@ -105,7 +105,7 @@ def show_all(player, dealer):
 def win(winner, loser):
     if isinstance(winner, Player):
         print("Player wins!")
-        user.chips.win_bet()
+        winner.chips.win_bet()
     else:
         print("Dealer wins!")
         user.chips.lose_bet()
