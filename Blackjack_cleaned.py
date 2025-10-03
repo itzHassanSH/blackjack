@@ -102,8 +102,8 @@ def show_all(player, dealer):
     print("\nPlayer's Hand: ", *player.hand.cards, sep='\n')
     print(f"Player's Total: {player.hand.value}")
 
-def win(user):
-    if isinstance(user, Player):
+def win(winner, loser):
+    if isinstance(winner, Player):
         print("Player wins!")
         user.chips.win_bet()
     else:
