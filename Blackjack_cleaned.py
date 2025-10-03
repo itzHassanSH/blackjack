@@ -183,7 +183,7 @@ def main():
                 if dealer.hand.value > 21:
                     bust(winner=player, loser=dealer)
                 elif player.hand.value > dealer.hand.value:
-                    win(player)
+                    win(winner=player, loser=dealer)
                 elif dealer.hand.value > player.hand.value:
                     win(dealer)
                 else:
