@@ -171,7 +171,7 @@ def main():
                 player.hand.hit(card_deck)
                 show_some(player, dealer)
                 if player.hand.value > 21:
-                    bust(player)
+                    bust(loser=player, winner=dealer)
                     break
                 if player.hand.value == 21:
                     move = "S"
