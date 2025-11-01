@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<body id="start-body">
+<div id="start-screen">
+    <header id="game-header">BlackJack</header>
+    <button id="play-btn">Play</button>
+    <div id="saved_game">
+        <button id="new_game">New Game</button>
+        <button id="continue">Continue</button>
+    </div>
+</div>
+</body>
+
+
+<script>
+    const phase = "{{ phase }}";
+    document.getElementById("saved_game").classList.add("hidden");
+    document.getElementById("play-btn").onclick = async () => {
+        if (phase === "deal") {
+            window.location.href = "/game"
+        } else {
+            document.getElementById("play-btn").classList.add("hidden")
+            document.getElementById("saved_game").classList.remove("hidden")
+        }
+    }
+    document.getElementById("new_game").onclick = async () => {
+        sessionStorage.setItem("autoReset", "true")
+        window.location.href = '/game'
+    }
+    document.getElementById("continue").onclick = async () => {
+        sessionStorage.setItem("resume", "true")
+        window.location.href = "/game"
+    }
+</script>
+
+
+
+{% endblock %}

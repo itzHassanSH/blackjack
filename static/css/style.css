@@ -1,0 +1,228 @@
+
+#start-body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url("/static/images/26701996-53f2-4859-9476-4cd2561529b2.jpg");
+    background-size: cover;
+    overflow: hidden;
+}
+
+#game-header {
+    position: absolute;
+    top: 25%;
+    left: 30%;
+
+    color: white;
+    font-size: 142px;
+    transform: translateX(-25%)
+}
+
+#play-btn {
+    position: absolute;
+    top: 55%;
+    left: 30%;
+
+    width: 250px;
+    height: 100px;
+    padding: 20px 20px;
+    font-size: 50px;
+    background-color: #ffbf00;
+    border-radius: 10px;
+    cursor: pointer;
+}
+#play-btn:hover, #saved_game button:hover {
+    filter: brightness(85%); /* darker on hover */
+}
+
+#saved_game button {
+    margin: 0 30px;
+    width: 250px;
+    height: 100px;
+    padding: 20px 20px;
+    font-size: 40px;
+    background-color: #ffbf00;
+    border-radius: 10px;
+    cursor: pointer;
+}
+#saved_game {
+   position: fixed;
+    top: 50%;
+    left: 38%;
+    transform: translate(-50%, 35%);
+}
+
+#game-body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url("/static/images/blackjack_table 2.png") center top;
+    background-size: 80%;
+    overflow: hidden;
+}
+
+.middle_message {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    transform: translate(0, -50%);
+    width: 100%;
+
+    background-color: rgba(0, 0, 0, 0.7);
+    text-align: center;
+    font-size: 75px;
+
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+    z-index: 999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding:0;
+    min-height: 60px;
+}
+.middle_message.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#middle_message p {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+#game-screen {
+    margin-top: 50px;
+
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.card-area {
+    margin: 20px;
+}
+
+.cards img {
+    width: 80px;
+    margin: 5px;
+}
+
+#game-screen button {
+    padding: 5px 10px;
+    font-size: 22px;
+    color: white;
+    margin: 5px;
+    border-radius: 10px;
+    border-color: white;
+    cursor: pointer;
+
+    width: 150px;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+#game-screen button:hover {
+    filter: brightness(85%);
+}
+
+#controls-right {
+    position: absolute;
+    right: 0;
+    bottom: 40%;
+}
+
+
+#hit-button {
+    position: absolute;
+    bottom: 150%;
+}
+#reset_session {
+    position: absolute;
+    right: 0;
+    top: 62.5%;
+}
+#clear-bet {
+    position: absolute;
+    left: 0;
+    top: 62.5%;
+}
+#controls-left {
+    position: absolute;
+    left: 0;
+    bottom: 40%;
+}
+#double_down-button {
+    position: absolute;
+    bottom: 150%;
+}
+#controls-bottom {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 35%);
+}
+#controls-bottom p {
+    margin: 40px;
+    padding: 0;
+    line-height: 1;
+
+    font-size: 60px;
+}
+.value_container {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+}
+.value_container p {
+    flex: 1;
+    text-align: center;
+
+}
+
+#wallet, #bet-buttons, #double_down-button, #controls-right, #bet, #clear-bet {
+    transition: transform 0.8s ease, opacity 0.8s ease;
+}
+#bet-buttons.slide-out {
+    transform: translateY(100%);
+    opacity: 0;
+}
+#wallet.slide-down, #bet.slide-down {
+    transform: translateY(150px);
+}
+
+#game-screen #controls-bottom #deal {
+    font-size: 50px;
+    padding: 5px 10px;
+    margin: 5px;
+    width: 200px;
+
+    transform: translateY(-60%);
+}
+
+#controls-right.slide-right {
+    transform: translateX(100%);
+    opacity: 0;
+}
+#double_down-button.slide-left, #clear-bet.slide-left {
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.card {
+    transform: translateY(-200px);
+    opacity: 0;
+    transition: transform 1s ease, opacity 1s ease;
+}
+.card.slide-in {
+    transform: translateY(0);
+    opacity: 1;
+}

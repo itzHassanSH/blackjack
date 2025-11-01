@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% block title %}Game{% endblock %}
+
+{% block content %}
+<body id="game-body" xmlns="http://www.w3.org/1999/html">
+    <div id="game-screen">
+        <!-- your blackjack code / buttons / cards go here -->
+        <div id="dealer-area" class="card-area">
+            <h2>Dealer</h2>
+        </div>
+        <div id="dealer-cards" class="cards">
+            <!-- .... -->
+        </div>
+        <p id="dealer-score">...</p>
+
+
+        <div id="player-cards" class="cards">
+            <!-- .... -->
+        </div>
+        <p id="player-score">...</p>
+        <div id="player-arena" class="card-area">
+            <h2>You</h2>
+        </div>
+
+
+        <div id="controls">
+            <div id="controls-right">
+                <button id="hit-button">HIT</button>
+                <button id="stand-button">STAND</button>
+            </div>
+            <button id="reset_session">RESET</button>
+            <div id="controls-left">
+                <button id="double_down-button">DOUBLE DOWN</button>
+            </div>
+            <button id="clear-bet">Clear Bet</button>
+            <div id="controls-bottom">
+                <button id="deal">DEAL</button>
+                <div class="value_container" id="value_container">
+                    <p id="wallet">Bank: ${{ wallet }}</p>
+                    <p id="bet">Bet: ${{ bet }}</p>
+                </div>
+                <div id="bet-buttons">
+                    <button id="bet-1" data-bet="1" type="button">1</button>
+                    <button id="bet-5" data-bet="5" type="button">5</button>
+                    <button id="bet-25" data-bet="25" type="button">25</button>
+                    <button id="bet-50" data-bet="50" type="button">50</button>
+                    <button id="bet-100" data-bet="100" type="button">100</button>
+                    <button id="bet-500" data-bet="500" type="button">500</button>
+                    <button id="bet-1000" data-bet="1000" type="button">1000</button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div id="middle_message" class="middle_message">
+            <p id="message">Place your bet to begin!</p>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+    const banner = document.getElementById('middle_message');
+    banner.classList.add('hidden');
+    let phase = "{{ phase }}";
+    const bet = "{{ bet }}";
+    UpdateUI(phase, bet)
+    document.addEventListener("DOMContentLoaded", async () => {
+        const autoReset = sessionStorage.getItem("autoReset");
+        if (autoReset === "true") {
+            sessionStorage.removeItem("autoReset");
+            await resetGameState();
+        }
+
+        const resume = sessionStorage.getItem("resume")
+        if (resume === null && phase === "in_game") {
+            window.location.href = '/'
+        } else if (resume === "true") {
+            sessionStorage.removeItem("resume")
+            document.getElementById("player-cards").innerHTML = "";
+            document.getElementById("dealer-cards").innerHTML = "";
+            await resumeGame();
+        }
+
+    })
+
+    let messageTimeout;
+    function showMessage(text, duration=1000) {
+        const banner = document.getElementById('middle_message');
+        banner.textContent = text;
+        banner.classList.remove('hidden');
+        if (messageTimeout) clearTimeout(messageTimeout);
+        messageTimeout = setTimeout( () => {banner.classList.add('hidden')}, duration);
+    }
+
+    document.getElementById("controls-bottom").addEventListener("click", async (e) => {
+        if (!e.target.matches('button[data-bet]')) return; // if not a match (!e) then return nothing, aka do nothing
+        const bet = parseInt(e.target.dataset.bet);
+        const response = await fetch("/place_bet", {
+            method: "Post",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ bet })
+            });
+            const data = await response.json();
+            // Update the UI
+            showMessage(data.message, 1000);
+            document.getElementById("wallet").innerText = "Bank: $" + data.wallet;
+            document.getElementById("bet").innerText = "Bet: $" + data.bet;
+        const deal = document.getElementById("deal");
+        deal.classList.remove("hidden");
+
+
+    })
+
+    document.getElementById("reset_session").onclick = async () => {
+        await resetGameState()
+    }
+    async function resetGameState() {
+        try {
+            const response = await fetch("/reset_wallet", {
+                method: "Post",
+                headers: {'Content-Type': 'application/json'}
+            });
+            const data = await response.json();
+
+            showMessage(data.message, 1000);
+            document.getElementById("wallet").innerText = "Bank: $" + data.wallet;
+            document.getElementById("bet").innerText = "Bet: $" + data.bet;
+            document.getElementById("player-cards").innerHTML = "";
+            document.getElementById("dealer-cards").innerHTML = "";
+
+            phase = data.phase
+            UpdateUI(data.phase, data.bet);
+
+        } catch (err) {
+            console.error("Reset failed:", err)
+        }
+    }
+    async function resumeGame() {
+        try {
+            const response = await fetch("/resume", {
+                method: "Post",
+                headers: {'Content-Type': 'application/json'}
+            });
+            const data = await response.json();
+            UpdateUI(data.phase, data.bet);
+            showCards(data.player_cards, data.dealer_cards, true)
+
+        } catch(err) {
+            console.error("Resume failed:", err)
+        }
+
+    }
+
+    document.getElementById("deal").addEventListener("click", async () => {
+        const response = await fetch("/deal", {
+            method: "Post",
+            headers: {'Content-Type': 'application/json'}
+        });
+        const data = await response.json();
+
+        UpdateUI(data.phase, data.bet);
+        showCards(data.player_cards, data.dealer_cards, true)
+
+    })
+
+    document.getElementById("clear-bet").addEventListener("click", async () => {
+        const response = await fetch("/clear_bet", {
+            method: "Post",
+            headers: {'Content-Type': 'application/json'}
+        });
+        const data = await response.json()
+        showMessage(data.message, 1000);
+        if ("bet" in data) {
+            document.getElementById("wallet").innerText = "Bank: $" + data.wallet;
+            document.getElementById("bet").innerText = "Bet: $" + data.bet;
+            document.getElementById("deal").classList.add("hidden")
+        }
+    })
+
+    document.getElementById("hit-button").addEventListener("click", async () => {
+        const response = await fetch("/hit", {
+            method: "Post",
+            header: {'Content-Type': 'application/json'}
+        });
+        const data = await response.json()
+
+        showCards(data.player_cards, null, false)
+    })
+
+    function UpdateUI(phase, bet=undefined) {
+        const bank = document.getElementById("wallet")
+        const bet_placed = document.getElementById("bet");
+        const betButtons = document.getElementById("bet-buttons");
+        const controlsLeft = document.getElementById("double_down-button");
+        const controlsRight = document.getElementById("controls-right");
+        const deal = document.getElementById("deal");
+        const clearBet = document.getElementById("clear-bet")
+
+        if (phase === "deal") {
+            betButtons.classList.remove("slide-out");
+            bank.classList.remove("slide-down")
+            bet_placed.classList.remove("slide-down");
+            betButtons.classList.remove("hidden");
+            deal.classList.remove("hidden");
+
+            controlsLeft.classList.add("slide-left");
+            clearBet.classList.remove("slide-left")
+            controlsRight.classList.add("slide-right");
+
+
+        } else if (phase === "in_game") {
+            betButtons.classList.add("slide-out");
+            bank.classList.add("slide-down")
+            bet_placed.classList.add("slide-down");
+            betButtons.classList.add("hidden");
+            deal.classList.add("hidden");
+
+            controlsLeft.classList.remove("slide-left");
+            clearBet.classList.add("slide-left")
+            controlsRight.classList.remove("slide-right");
+        }
+        if (parseInt(bet) === 0) {
+            deal.classList.add("hidden");
+        }
+    }
+
+    function getCardImage(cardCode) {
+        if (cardCode === "face_down") return "/static/images/PNG-cards-1.3/back.png";
+        return `/static/images/PNG-cards-1.3/${cardCode}.png`;
+    }
+
+    function addCardImage(container, card, i) {
+        const img = document.createElement("img");
+            img.src = getCardImage(card);
+            img.classList.add("card");
+            container.appendChild(img);
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    img.classList.add("slide-in");
+                }, i*500);
+            });
+            // Using requestAnimationFrame ensures the browser has applied the initial DOM layout before starting the animation.
+    }
+
+    function showCards(playerCards, dealerCards, isInitial=false) {
+        const playerDiv = document.getElementById("player-cards");
+        const dealerDiv = document.getElementById("dealer-cards");
+
+        if (isInitial) {
+            playerDiv.innerHTML = "";
+            dealerDiv.innerHTML = "";
+
+            playerCards.forEach((card, i) => {
+                addCardImage(playerDiv, card, i);
+            });
+            dealerCards.forEach((card, i) => {
+                const displayCard = i === 0 ? "face_down": card;
+                addCardImage(dealerDiv, displayCard, i);
+            });
+        }
+        if (dealerCards === null) {
+            addCardImage(playerDiv, playerCards, 0)
+        }
+        if (playerCards === null) {
+            addCardImage(dealerDiv, dealerCards, 0)
+        }
+    }
+
+
+
+</script>
+{% endblock %}
