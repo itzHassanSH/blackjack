@@ -60,8 +60,11 @@ class Chips:
         self.wallet = 1000
         self.bet = 0
 
-    def win_bet(self):
-        self.wallet += self.bet
+    def win_bet(self, blackjack=False):
+        if blackjack:
+            self.wallet += self.bet*1.5
+        else:
+            self.wallet += self.bet
 
     def lose_bet(self):
         self.wallet -= self.bet
@@ -102,21 +105,21 @@ def show_all(player, dealer):
     print("\nPlayer's Hand: ", *player.hand.cards, sep='\n')
     print(f"Player's Total: {player.hand.value}")
 
-def win(winner, loser):
+def win(winner, loser, blackjack=False):
     if isinstance(winner, Player):
         print("Player wins!")
-        winner.chips.win_bet()
+        winner.chips.win_bet(blackjack)
     else:
         print("Dealer wins!")
         loser.chips.lose_bet()
 
-def bust(winner, loser):
+def bust(winner, loser, blackjack=False):
     if isinstance(loser, Player):
         print("Player busts!")
         loser.chips.lose_bet()
     else:
         print("Dealer busts!")
-        winner.chips.win_bet()
+        winner.chips.win_bet(blackjack)
 
 def push():
     print("Dealer and Player tie! It's a push. ")
@@ -128,7 +131,7 @@ def check_initial_blackjack(player, dealer):
     elif player.hand.value == 21:
         show_all(player, dealer)
         print("Player wins with a Blackjack!")
-        player.chips.win_bet()
+        player.chips.win_bet(True)
     elif dealer.hand.value == 21:
         show_all(player, dealer)
         print("Dealer wins with a Blackjack!")
@@ -176,14 +179,17 @@ def main():
                 if player.hand.value == 21:
                     move = "S"
             if move[0] == "S":
+                blackjack = False
+                if player.hand.value == 21:
+                    blackjack = True
                 show_all(player, dealer)
                 while dealer.hand.value < 17:
                     dealer.hand.hit(card_deck)
                     show_all(player, dealer)
                 if dealer.hand.value > 21:
-                    bust(winner=player, loser=dealer)
+                    bust(winner=player, loser=dealer, blackjack=blackjack)
                 elif player.hand.value > dealer.hand.value:
-                    win(winner=player, loser=dealer)
+                    win(winner=player, loser=dealer, blackjack=blackjack)
                 elif dealer.hand.value > player.hand.value:
                     win(winner=dealer, loser=player)
                 else:
